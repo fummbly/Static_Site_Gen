@@ -28,10 +28,12 @@ class HTMLNode:
         return f"HTMLNode(Tag: {self.tag}, Value: {self.value}, Children: {self.children}, Props: {self.props})"
 
 
+# Child of HTMLNode
 class LeafNode(HTMLNode):
     def __init__(self, tag, value, props=None):
         super().__init__(tag, value, None, props)
         
+
     def to_html(self):
         if self.value is None:
             raise ValueError("Invalid HTML: no value")
@@ -42,4 +44,28 @@ class LeafNode(HTMLNode):
     def __repr__(self):
         return f"LeafNode(Tag: {self.tag}, Value: {self.value}, Props: {self.props})"
 
+# ParentNode to hold other nodes inside it
+class ParentNode(HTMLNode):
+    # Init with requirement for children
+    def __init__(self, tag, children, props=None):
+        super().__init__(tag, None, children, props)
+
+    # to html override with exceptions for tag and children
+    def to_html(self):
+        if self.tag is None:
+            raise ValueError("Invalid HTML: no tag")
+
+        if self.children is None:
+            raise ValueError("Invalid HTML: no children")
+
+        # Starting of formated output with parentnode tag and props
+        html = f"<{self.tag}{self.props_to_html()}>"
+
+        # For each child call the to_html function on it
+        for child in self.children:
+            html += child.to_html()
+
+        # append the final parentnode tag
+        html += f"</{self.tag}>"
+        return html
 

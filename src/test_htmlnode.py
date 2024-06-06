@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -43,6 +43,58 @@ class TestHTMLNode(unittest.TestCase):
         self.assertRaises(ValueError, node.to_html)
 
 
+    def test_parent_with_leafs(self):
+        node = ParentNode(
+            "p",
+            [
+                LeafNode("a", "Link text"),
+                LeafNode("b", "Bold text"),
+                LeafNode("i", "Italic text"),
+            ]
+        )
+
+        self.assertEqual("<p><a>Link text</a><b>Bold text</b><i>Italic text</i></p>", node.to_html())
+
+    def test_nested_parents(self):
+        node = ParentNode(
+            "p",
+            [
+                ParentNode("div", [
+                    ParentNode("p", [
+                        LeafNode("a", "Link text"),
+                        LeafNode("a", "Link text"),
+                        LeafNode("a", "Link text"),
+                    ]),
+                ]),
+            ]
+        )
+
+        self.assertEqual("<p><div><p><a>Link text</a><a>Link text</a><a>Link text</a></p></div></p>", node.to_html())
+
+    def test_parent_props(self):
+        node = ParentNode(
+            "p",
+            [
+                ParentNode(
+                    "div",
+                    [
+                        LeafNode("a", "Click here", {"href": "https://www.google.com"}),
+                        LeafNode("img", "Image", {"alt-text": "An image of a dog"}),
+                        LeafNode("p", "Paragraph")
+                    ],
+                    {
+                        "class": "nav",     
+                    }
+                ),
+                LeafNode("a", "Link to boot.dev", {"href": "https://www.boot.dev"}),
+                LeafNode("p", "Second Paragraph"),
+            ],
+            {
+                "class": "center",
+            }
+        )
+
+        self.assertEqual('<p class="center"><div class="nav"><a href="https://www.google.com">Click here</a><img alt-text="An image of a dog">Image</img><p>Paragraph</p></div><a href="https://www.boot.dev">Link to boot.dev</a><p>Second Paragraph</p></p>', node.to_html())
 
 
 
