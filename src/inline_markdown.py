@@ -33,3 +33,15 @@ def split_nodes_delimiter(old_nodes, delimiter, text_type):
         new_nodes.extend(split_nodes)
     # return the new nodes
     return new_nodes
+
+
+# extract image links with re findall
+def extract_markdown_images(text):
+    images = re.findall(r"!\[(.*?)\]\((.*?)\)", text)
+    return images
+
+
+# extrack links with re findall
+def extract_markdown_links(text):
+    links = re.findall(r"\[(.*?)\]\((.*?)\)", text)
+    return links
