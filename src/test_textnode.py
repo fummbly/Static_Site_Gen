@@ -1,7 +1,7 @@
 import unittest
 
 from htmlnode import LeafNode
-from textnode import TextNode
+from textnode import TextNode, text_node_to_html_node
 
 
 class TestTextNode(unittest.TestCase):
@@ -21,13 +21,16 @@ class TestTextNode(unittest.TestCase):
         self.assertNotEqual(node, node2)
 
     def test_eq_url(self):
-        node = TextNode("This is a text node", "italic", "https://www.google.com")
-        node2 = TextNode("This is a text node", "italic", "https://www.google.com")
+        node = TextNode("This is a text node", "italic",
+                        "https://www.google.com")
+        node2 = TextNode("This is a text node", "italic",
+                         "https://www.google.com")
         self.assertEqual(node, node2)
 
     def test_repr(self):
         node = TextNode("This is a text node", "bold")
-        self.assertEqual("TextNode(This is a text node, bold, None)", repr(node))
+        self.assertEqual(
+            "TextNode(This is a text node, bold, None)", repr(node))
 
     def test_text_to_html(self):
         node = TextNode("This is a bold text node", "bold")
@@ -35,19 +38,20 @@ class TestTextNode(unittest.TestCase):
         node3 = TextNode("This is an image node", "image", "https://dog.png")
         node4 = TextNode("This is a blank text node", "text")
 
-        self.assertEqual("<b>This is a bold text node</b>", node.text_node_to_html_node().to_html())
-        self.assertEqual("<i>This is a italic node</i>", node2.text_node_to_html_node().to_html())
-        self.assertEqual('<img src="https://dog.png" alt="This is an image node"></img>', node3.text_node_to_html_node().to_html())
-        self.assertEqual("This is a blank text node", node4.text_node_to_html_node().to_html())
+        self.assertEqual("<b>This is a bold text node</b>",
+                         text_node_to_html_node(node).to_html())
+        self.assertEqual("<i>This is a italic node</i>",
+                         text_node_to_html_node(node2).to_html())
+        self.assertEqual('<img src="https://dog.png" alt="This is an image node"></img>',
+                         text_node_to_html_node(node3).to_html())
+        self.assertEqual("This is a blank text node",
+                         text_node_to_html_node(node4).to_html())
 
     def test_invalid_text_type(self):
         node = TextNode("Another text node with incorrect type", "Big")
 
-        self.assertRaises(Exception, node.text_node_to_html_node)
+        self.assertRaises(Exception, text_node_to_html_node)
 
 
 if __name__ == "__main__":
     unittest.main()
-
-
-
