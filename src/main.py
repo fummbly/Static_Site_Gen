@@ -1,18 +1,28 @@
-from block_markdown import markdown_to_blocks
+from block_markdown import markdown_to_html_node
+from htmlnode import ParentNode
 
 def main():
-    text = """This is **bolded** paragraph
+    text = """
+# My main heading
 
-This is another paragraph with *italic* text and `code` here    
-This is the same paragraph on a new line
+* Item 
+* Another 
+* and this one is **special**
 
-* This is a list
-* with items"""
-    blocks = markdown_to_blocks(text)
-    for block in blocks:
-        print(block)
-        print("\n")
+>This is a quote
+>And Another
+
+```
+Some code
+```
+
+And this is
+just a paragraph
 
 
+"""
+    print(markdown_to_html_node(text).to_html())
 
+    
 main()
+
