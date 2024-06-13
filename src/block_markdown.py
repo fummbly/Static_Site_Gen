@@ -1,4 +1,5 @@
 import re
+from typing import ParamSpec
 from htmlnode import ParentNode, LeafNode 
 from inline_markdown import text_to_text_nodes
 from textnode import text_node_to_html_node
@@ -75,62 +76,74 @@ def block_to_block_type(block):
     return block_type_paragraph
 
 def create_children_nodes(line):
+    # create a list of children
     children = []
+    # split the text into indiviual nodes
     text_nodes = text_to_text_nodes(line)
     for node in text_nodes:
+        # append each node into the children list
         children.append(text_node_to_html_node(node))
     return children
 
 def create_quote_block(block):
-    children = []
+    new_lines = []
     lines = block.split("\n")
     for line in lines:
-        line = line[1:]
-        children.extend(create_children_nodes(line))
-
+        # remove the quote character from the text and append it to new lines
+        new_lines.append(line[1:])
+    # join the lines together for a continus line
+    quotes = " ".join(new_lines)
+    children = create_children_nodes(quotes)
     quote = ParentNode("blockquote", children)
     return quote
 
 
 def create_heading(block):
-    children = []
+    new_lines = []
     lines = block.split("\n")
+    # count the amount # occuring
     heading_number = lines[0].count("#")
+    # if the number is greater than 6, invalid heading 
     if heading_number > 6:
         raise ValueError("Invalid heading level")
     for line in lines:
+        # loop through the lines and remove the # character and any whitespace
         line = line.lstrip("#")
         line = line.lstrip()
-        children.extend(create_children_nodes(line))
-    
+        new_lines.append(line)
+
+    headings = " ".join(new_lines)
+    children = create_children_nodes(headings)
     heading = ParentNode(f"h{heading_number}", children)
     return heading
+    
+
 
 def create_code_block(block):
-    children = []
     lines = block.split("\n")
+    # remove back ticks from lines
     lines = lines[1:-1]
-    for line in lines:
-        children.extend(create_children_nodes(line))
-        
+    code_text = " ".join(lines)
+    children = create_children_nodes(code_text)
     code = ParentNode("code", children) 
     pre = ParentNode("pre", [code])
     return pre
 
 def create_paragraph_block(block):
-    children = []
     lines = block.split("\n")
-    for line in lines:
-        children.extend(create_children_nodes(line))
-    paragraph = ParentNode("p", children)
-    return paragraph
+    paragraph = " ".join(lines)
+    children = create_children_nodes(paragraph)
+    return ParentNode("p", children)
 
 def create_unordered_list(block):
     children = []
     lines = block.split("\n")
     for line in lines:
+        # remove list marker
         line = line[2:]
+        # create list item with children
         list_item = ParentNode("li", create_children_nodes(line))
+        # append list item to ul children
         children.append(list_item)
     unordered_list = ParentNode("ul", children)
     return unordered_list
@@ -148,7 +161,9 @@ def create_ordered_list(block):
 
 def markdown_to_html_node(markdown):
     children = []
+    # split markdown into blocks
     blocks = markdown_to_blocks(markdown)
+    # create children on each block type
     for block in blocks:
         block_type = block_to_block_type(block)
         if block_type == block_type_quote:

@@ -5,6 +5,8 @@ def main():
     text = """
 # My main heading
 
+### A smaller heading
+
 * Item 
 * Another 
 * and this one is **special**
