@@ -1,7 +1,5 @@
-from shutil import rmtree
-from os import path
+from os import listdir, mkdir, path
 from block_markdown import markdown_to_blocks, markdown_to_html_node
-from copystatic import copy_dir
 
 
 # extract page title from markdown
@@ -23,11 +21,6 @@ def extract_title(markdown):
 # Generate HTML page from markdown
 def generate_page(from_path, template_path, to_path):
     print(f"Generating page from {from_path} to {to_path} with {template_path}")
-    # remove the public dir if exists
-    if path.exists("./public"):
-        rmtree("./public")
-
-    copy_dir("./static", "./public")
 
     # open markdown page and put it into markdown variable
     markdown = ""
@@ -60,5 +53,25 @@ def generate_page(from_path, template_path, to_path):
 
 
     
+def generate_pages_recursive(content_dir, template_path, dest_dir):
+    if not path.exists(content_dir) or not path.isdir(content_dir):
+        raise Exception(f"{content_dir} doesn't exist or isn't a directory")
+
+    if not path.exists(dest_dir):
+        mkdir(dest_dir)
+    
+    for files in listdir(content_dir):
+        content_file = path.join(content_dir, files)
+        if path.isfile(content_file):
+            index_file = files[:-3]
+            index_file += ".html"
+            dest_file = path.join(dest_dir, index_file)
+            print(f"Generate page: {dest_file} from {content_file} with {template_path}")
+            generate_page(content_file, template_path, dest_file)
+        else:
+            dest_file = path.join(dest_dir, files)
+            print(f"Moving to directory: {content_file}")
+            generate_pages_recursive(content_file, template_path, dest_file)
+
 
 

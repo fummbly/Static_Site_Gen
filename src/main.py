@@ -1,9 +1,12 @@
-from generate_html import generate_page
+from shutil import rmtree
+from generate_html import generate_pages_recursive
+from copystatic import copy_dir
 
 
 def main():
 
-    generate_page("./content/index.md", "./template.html", "./public/index.html")
-
+    rmtree("./public")
+    copy_dir("./static", "./public")
+    generate_pages_recursive("./content", "./template.html", "./public")
 
 main()
